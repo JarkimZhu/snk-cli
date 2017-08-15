@@ -1,0 +1,24 @@
+{
+  "name": "react-x-cli",
+  "version": "0.1.0",
+  "license": "ISC",
+  "author": "JarkimZhu <zhujiaqi@sinosafe.com.cn> (http://www.sinosafe.com.cn)",
+  "description": "The React X CLI tools",
+  "main": "index.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "bin": {
+    "react-x": "index.js"
+  },
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "minimist": "^1.2.0",
+    "prompt": "^0.2.14",
+    "semver": "^5.0.3",
+    "rimraf":"^2.6.1"
+  }
+}
