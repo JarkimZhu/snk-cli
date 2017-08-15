@@ -365,13 +365,13 @@ function replaceModifyFilesToLocalCli() {
 
 function removeReactNative(forceNpmClient, yarnVersion) {
   console.log('Removing React Native ...');
-  var toRemoves = ['react-native', 'babel-preset-react-native', 'redbox-react'];
+  var toRemoveModules = ['react-native', 'babel-preset-react-native', 'redbox-react'];
   var installCommand;
   var commands = [];
   if (yarnVersion) {
     console.log('Using yarn v' + yarnVersion);
-    for (var i = 0; i < toRemoves.length; i++) {
-      installCommand = 'yarn remove ' + toRemoves[i];
+    for (var i = 0; i < toRemoveModules.length; i++) {
+      installCommand = 'yarn remove ' + toRemoveModules[i];
       if (options.verbose) {
         installCommand += ' --verbose';
       }
@@ -381,8 +381,8 @@ function removeReactNative(forceNpmClient, yarnVersion) {
     if (!forceNpmClient) {
       console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
     }
-    for (var i = 0; i < toRemoves.length; i++) {
-      installCommand = 'npm uninstall --save ' + toRemoves[i];
+    for (var i = 0; i < toRemoveModules.length; i++) {
+      installCommand = 'npm uninstall ' + toRemoveModules[i] + ' --save';
       if (options.verbose) {
         installCommand += ' --verbose';
       }
@@ -400,13 +400,14 @@ function removeReactNative(forceNpmClient, yarnVersion) {
     }
   }
 
+  var toRemoveFiles = ['ios', 'android', '__tests__', '.babelrc', '.flowconfig', '.buckconfig','.watchmanconfig','app.json','index.android.js','index.ios.js','scripts.json']
+  function noop() { };
   var rimraf = require('rimraf');
-  rimraf(path.resolve(
-    process.cwd(),
-    'android'
-  ));
-  rimraf(path.resolve(
-    process.cwd(),
-    'ios'
-  ));
+  for (var i = 0; i < toRemoveFiles.length; i++) {
+    rimraf(path.resolve(
+      process.cwd(),
+      toRemoveFiles[i]
+    ), noop);
+  }
+  console.log('Remove finished.')
 }
