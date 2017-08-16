@@ -313,7 +313,7 @@ function run(root, projectName, options) {
   cli.init(root, projectName);
 
   if (options.web) {
-    removeReactNative(forceNpmClient, yarnVersion);
+    removeReactNative(options);
   }
 }
 
@@ -363,15 +363,17 @@ function replaceModifyFilesToLocalCli() {
   });
 }
 
-function removeReactNative(forceNpmClient, yarnVersion) {
+function removeReactNative(options) {
   console.log('Removing React Native ...');
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var toRemoveModules = ['react-native', 'babel-preset-react-native', 'redbox-react'];
   var installCommand;
   var commands = [];
   if (yarnVersion) {
     console.log('Using yarn v' + yarnVersion);
     for (var i = 0; i < toRemoveModules.length; i++) {
-      installCommand = 'yarn remove ' + toRemoveModules[i];
+      installCommand = 'yarn remove ' + toRemoveModules[i] + ' --ignore-scripts';
       if (options.verbose) {
         installCommand += ' --verbose';
       }
@@ -382,7 +384,7 @@ function removeReactNative(forceNpmClient, yarnVersion) {
       console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
     }
     for (var i = 0; i < toRemoveModules.length; i++) {
-      installCommand = 'npm uninstall ' + toRemoveModules[i] + ' --save';
+      installCommand = 'npm uninstall ' + toRemoveModules[i] + ' --ignore-scripts';
       if (options.verbose) {
         installCommand += ' --verbose';
       }

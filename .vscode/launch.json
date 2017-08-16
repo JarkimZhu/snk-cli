@@ -15,7 +15,8 @@
                 "--template",
                 "web",
                 "--npm",
-                "--web"
+                "--web",
+                "--verbose"
             ]
         }
     ]

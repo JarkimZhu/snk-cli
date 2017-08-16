@@ -1,9 +1,9 @@
 {
-  "name": "react-x-cli",
+  "name": "snk-cli",
   "version": "0.1.0",
   "license": "ISC",
   "author": "JarkimZhu <zhujiaqi@sinosafe.com.cn> (http://www.sinosafe.com.cn)",
-  "description": "The React X CLI tools",
+  "description": "The SNK CLI tools",
   "main": "index.js",
   "engines": {
     "node": ">=4"
@@ -12,7 +12,7 @@
     "test": "mocha"
   },
   "bin": {
-    "react-x": "index.js"
+    "snk": "index.js"
   },
   "dependencies": {
     "chalk": "^1.1.1",
