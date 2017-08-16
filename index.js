@@ -233,7 +233,7 @@ function createProject(name, options) {
   var projectName = path.basename(root);
 
   console.log(
-    'This will walk you through creating a new React X project in',
+    'This will walk you through creating a new SNK project in',
     root
   );
 
@@ -241,20 +241,33 @@ function createProject(name, options) {
     fs.mkdirSync(root);
   }
 
-  var packageJson = {
-    name: projectName,
-    version: '0.0.1',
-    private: true,
-    scripts: {
-      start: 'node node_modules/react-native/local-cli/cli.js start',
-      ios: 'react-native run-ios',
-      android: 'react-native run-android',
-    }
-  };
-  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
-  process.chdir(root);
+  if (!options.web) {
+    var packageJson = {
+      name: projectName,
+      version: '0.0.1',
+      private: true,
+      scripts: {
+        start: 'node node_modules/react-native/local-cli/cli.js start',
+        ios: 'react-native run-ios',
+        android: 'react-native run-android',
+      }
+    };
+    fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
+    process.chdir(root);
 
-  run(root, projectName, options);
+    run(root, projectName, options);
+  } else {
+    var packageJson = {
+      name: projectName,
+      version: '0.0.1',
+      private: true,
+      scripts: {}
+    };
+    fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
+    process.chdir(root);
+
+    runForWeb(root, projectName, options);
+  }
 }
 
 function getInstallPackage(rnPackage) {
@@ -311,10 +324,14 @@ function run(root, projectName, options) {
   replaceModifyFilesToLocalCli();
   cli = require(CLI_MODULE_PATH());
   cli.init(root, projectName);
+}
 
-  if (options.web) {
-    removeReactNative(options);
-  }
+function runForWeb(root, projectName, options) {
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  
+  var webCli = require('./web-cli/cli');
+  webCli.init(root, projectName);
 }
 
 function checkNodeVersion() {
@@ -361,55 +378,4 @@ function replaceModifyFilesToLocalCli() {
     var dstFile = path.join(dst, file);
     fs.writeFileSync(dstFile, fs.readFileSync(srcFile));
   });
-}
-
-function removeReactNative(options) {
-  console.log('Removing React Native ...');
-  var forceNpmClient = options.npm;
-  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
-  var toRemoveModules = ['react-native', 'babel-preset-react-native', 'redbox-react'];
-  var installCommand;
-  var commands = [];
-  if (yarnVersion) {
-    console.log('Using yarn v' + yarnVersion);
-    for (var i = 0; i < toRemoveModules.length; i++) {
-      installCommand = 'yarn remove ' + toRemoveModules[i] + ' --ignore-scripts';
-      if (options.verbose) {
-        installCommand += ' --verbose';
-      }
-      commands.push(installCommand);
-    }
-  } else {
-    if (!forceNpmClient) {
-      console.log('Consider installing yarn to make this faster: https://yarnpkg.com');
-    }
-    for (var i = 0; i < toRemoveModules.length; i++) {
-      installCommand = 'npm uninstall ' + toRemoveModules[i] + ' --ignore-scripts';
-      if (options.verbose) {
-        installCommand += ' --verbose';
-      }
-      commands.push(installCommand);
-    }
-  }
-  for (var i = 0; i < commands.length; i++) {
-    installCommand = commands[i];
-    try {
-      execSync(installCommand, { stdio: 'inherit' });
-    } catch (err) {
-      console.error(err);
-      console.error('Command `' + installCommand + '` failed.');
-      process.exit(1);
-    }
-  }
-
-  var toRemoveFiles = ['ios', 'android', '__tests__', '.babelrc', '.flowconfig', '.buckconfig','.watchmanconfig','app.json','index.android.js','index.ios.js','scripts.json']
-  function noop() { };
-  var rimraf = require('rimraf');
-  for (var i = 0; i < toRemoveFiles.length; i++) {
-    rimraf(path.resolve(
-      process.cwd(),
-      toRemoveFiles[i]
-    ), noop);
-  }
-  console.log('Remove finished.')
 }

@@ -10,36 +10,23 @@
 
 var chalk = require('chalk');
 var path = require('path');
-var minimist = require('minimist');
 
-function printRunInstructions(projectDir, projectName, argsOrOptions) {
-  const args = argsOrOptions || [argsOrOptions].concat(process.argv.slice(4));
-
-  // args array is e.g. ['AwesomeApp', '--verbose', '--template', 'navigation']
-  if (!args || args.length === 0) {
-    console.error('snk init requires options.');
-    return;
-  }
-
-  const options = minimist(args);
-
-  if (!options.web) {
-    const absoluteProjectDir = path.resolve(projectDir);
-    // iOS
-    const xcodeProjectPath = path.resolve(projectDir, 'ios', projectName) + '.xcodeproj';
-    const relativeXcodeProjectPath = path.relative(process.cwd(), xcodeProjectPath);
-    console.log(chalk.white.bold('To run your app on iOS:'));
-    console.log('   cd ' + absoluteProjectDir);
-    console.log('   react-native run-ios');
-    console.log('   - or -');
-    console.log('   Open ' + relativeXcodeProjectPath + ' in Xcode');
-    console.log('   Hit the Run button');
-    // Android
-    console.log(chalk.white.bold('To run your app on Android:'));
-    console.log('   cd ' + absoluteProjectDir);
-    console.log('   Have an Android emulator running (quickest way to get started), or a device connected');
-    console.log('   react-native run-android');
-  }
+function printRunInstructions(projectDir, projectName) {
+  const absoluteProjectDir = path.resolve(projectDir);
+  // iOS
+  const xcodeProjectPath = path.resolve(projectDir, 'ios', projectName) + '.xcodeproj';
+  const relativeXcodeProjectPath = path.relative(process.cwd(), xcodeProjectPath);
+  console.log(chalk.white.bold('To run your app on iOS:'));
+  console.log('   cd ' + absoluteProjectDir);
+  console.log('   react-native run-ios');
+  console.log('   - or -');
+  console.log('   Open ' + relativeXcodeProjectPath + ' in Xcode');
+  console.log('   Hit the Run button');
+  // Android
+  console.log(chalk.white.bold('To run your app on Android:'));
+  console.log('   cd ' + absoluteProjectDir);
+  console.log('   Have an Android emulator running (quickest way to get started), or a device connected');
+  console.log('   react-native run-android');
 }
 
 module.exports = printRunInstructions;

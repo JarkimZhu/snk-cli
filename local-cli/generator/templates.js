@@ -12,6 +12,7 @@ const copyProjectTemplateAndReplace = require('./copyProjectTemplateAndReplace')
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
+const minimist = require('minimist');
 
 /**
  * Templates released as part of react-native in local-cli/templates.
@@ -57,12 +58,15 @@ function listTemplatesAndExit(newProjectName, options) {
  *                    yarn is not available. For example '0.18.1'.
  */
 function createProjectFromTemplate(destPath, newProjectName, template, yarnVersion) {
-  // Expand the basic 'HelloWorld' template
-  copyProjectTemplateAndReplace(
-    path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
-    destPath,
-    newProjectName
-  );
+  const options = minimist(process.argv.slice(4));
+  if (!options.web) {
+    // Expand the basic 'HelloWorld' template
+    copyProjectTemplateAndReplace(
+      path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
+      destPath,
+      newProjectName
+    );
+  }
 
   if (template === undefined) {
     // No specific template, use just the HelloWorld template above
@@ -141,7 +145,7 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
         // only for publishing the template to npm.
         // We want to ignore this dummy file, otherwise it would overwrite
         // our project's package.json file.
-        ignorePaths: ['package.json', 'dependencies.json'],
+        ignorePaths: ['package.json', 'dependencies.json', 'scripts.json'],
       }
     );
     installTemplateDependencies(templatePath, yarnVersion);
@@ -154,12 +158,20 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
         execSync(`npm uninstall ${templateName} --ignore-scripts`);
       }
     } catch (err) {
-      // Not critical but we still want people to know and report
-      // if this the clean up fails.
-      console.warn(
-        `Failed to clean up template temp files in node_modules/${templateName}. ` +
-        'This is not a critical error, you can work on your app.'
-      );
+      try {
+        if (yarnVersion) {
+          execSync(`yarn remove ${templateName} --ignore-scripts`);
+        } else {
+          execSync(`npm uninstall ${templateName} --ignore-scripts`);
+        }
+      } catch (e) {
+        // Not critical but we still want people to know and report
+        // if this the clean up fails.
+        console.warn(
+          `Failed to clean up template temp files in node_modules/${templateName}. ` +
+          'This is not a critical error, you can work on your app.'
+        );
+      }
     }
   }
 }
@@ -223,8 +235,11 @@ function installTemplateDependencies(templatePath, yarnVersion) {
     }
   }
 
-  console.log('Linking native dependencies into the project\'s build files...');
-  execSync('react-native link', { stdio: 'inherit' });
+  const options = minimist(process.argv.slice(4));
+  if (!options.web) {
+    console.log('Linking native dependencies into the project\'s build files...');
+    execSync('react-native link', { stdio: 'inherit' });
+  }
 }
 
 function replaceScriptsFromTemplate(templatePath) {
@@ -250,7 +265,7 @@ function replaceScriptsFromTemplate(templatePath) {
     process.cwd(),
     'package.json'
   );
-  
+
   let packageJson;
   try {
     packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
