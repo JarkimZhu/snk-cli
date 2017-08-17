@@ -59,18 +59,6 @@ function init(projectDir, argsOrName) {
  * @param options Command line arguments parsed by minimist.
  */
 function generateProject(destinationRoot, newProjectName, options) {
-    //   var reactNativePackageJson = require('../../package.json');
-    //   var { peerDependencies } = reactNativePackageJson;
-    //   if (!peerDependencies) {
-    //     console.error('Missing React peer dependency in React Native\'s package.json. Aborting.');
-    //     return;
-    //   }
-
-    //   var reactVersion = peerDependencies.react;
-    //   if (!reactVersion) {
-    //     console.error('Missing React peer dependency in React Native\'s package.json. Aborting.');
-    //     return;
-    //   }
 
     const yarnVersion =
         (!options.npm) &&
@@ -79,25 +67,6 @@ function generateProject(destinationRoot, newProjectName, options) {
 
     createProjectFromTemplate(destinationRoot, newProjectName, options.template, yarnVersion);
 
-    //   if (yarnVersion) {
-    //     console.log('Adding React...');
-    //     execSync(`yarn add react@${reactVersion}`, {stdio: 'inherit'});
-    //   } else {
-    //     console.log('Installing React...');
-    //     execSync(`npm install react@${reactVersion} --save --save-exact`, {stdio: 'inherit'});
-    //   }
-    // if (!options['skip-jest']) {
-    //     const jestDeps = (
-    //         `jest babel-jest`
-    //     );
-    //     if (yarnVersion) {
-    //         console.log('Adding Jest...');
-    //         execSync(`yarn add ${jestDeps} --dev --exact`, { stdio: 'inherit' });
-    //     } else {
-    //         console.log('Installing Jest...');
-    //         execSync(`npm install ${jestDeps} --save-dev --save-exact`, { stdio: 'inherit' });
-    //     }
-    // }
     const absoluteProjectDir = path.resolve(destinationRoot);
     console.log(chalk.white.bold('To run your app:'));
     console.log('   cd ' + absoluteProjectDir);
