@@ -361,18 +361,42 @@ function printVersionsAndExit(reactNativePackageJsonPath) {
 }
 
 function replaceModifyFilesToLocalCli() {
-  var src = path.resolve(
+  var gSrc = path.resolve(
     __dirname,
     'local-cli',
     'generator'
   );
-  var dst = path.resolve(
+  var gDst = path.resolve(
     process.cwd(),
     'node_modules',
     'react-native',
     'local-cli',
     'generator'
   );
+  copyDir(gSrc, gDst);
+
+  var tSrc = path.resolve(
+    __dirname,
+    'local-cli',
+    'templates',
+    'HelloWorld',
+    'android',
+    'app'
+  );
+  var tDst = path.resolve(
+    process.cwd(),
+    'node_modules',
+    'react-native',
+    'local-cli',
+    'templates',
+    'HelloWorld',
+    'android',
+    'app'
+  );
+  copyDir(tSrc, tDst);
+}
+
+function copyDir(src, dst) {
   fs.readdirSync(src).forEach(function (file) {
     var srcFile = path.join(src, file);
     var dstFile = path.join(dst, file);

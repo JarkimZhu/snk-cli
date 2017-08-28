@@ -13,7 +13,6 @@ const execSync = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
-var colors = require( "colors");
 
 /**
  * Templates released as part of react-native in local-cli/templates.
@@ -122,7 +121,7 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
     templateName = template.substr(template.lastIndexOf('/') + 1);
   } else {
     // e.g 'demo'
-    installPackage = 'react-native-template-' + template;
+    installPackage = 'snk-template-' + template;
     templateName = installPackage;
   }
 
@@ -159,7 +158,7 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
         execSync(`npm uninstall ${templateName} --ignore-scripts`);
       }
     } catch (err) {
-      console.log("You can ignore this ERROR, it will try to repaired. it always happen on Windows system.".yellow);
+      console.warn("You can ignore this ERROR, it will try to repaired. it always happen on Windows system.");
       try {
         if (yarnVersion) {
           execSync(`yarn remove ${templateName} --ignore-scripts`);
